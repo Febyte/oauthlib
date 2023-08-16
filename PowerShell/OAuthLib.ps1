@@ -51,6 +51,8 @@ function global:New-ClientAssertation
 		$Rsa = [System.Security.Cryptography.RSA]::Create()
 		$Rsa.ImportFromPem($Pem)
 		$SignatureBytes = $Rsa.SignData($SignaturePayloadBytes, [System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.RSASignaturePadding]::Pkcs1)
+		$Rsa.Dispose()
+		
 		$SignatureEncoded = ConvertTo-Base64Url -InputObject $SignatureBytes
 		
 		"${SignaturePayloadText}.${SignatureEncoded}"
