@@ -26,7 +26,7 @@ namespace MyHealthDocsClientLib
             _tenantId = tenantId;
         }
 
-        public override async Task<string> BuildClientAssertation(string clientId)
+        public override async Task<string> BuildClientAssertion(string clientId)
         {
             string signaturePayloadText = BuildHeaderAndPayload(clientId, TokenEndpointUri);
             byte[] signaturePayloadBytes = Encoding.UTF8.GetBytes(signaturePayloadText);
@@ -61,7 +61,7 @@ namespace MyHealthDocsClientLib
 
         public override async Task<Token> ExchangeToken(HttpClient httpClient, Token initialToken, string requestedClientId, string requestedSubject)
         {
-            string clientAssertation = await BuildClientAssertation(requestedClientId);
+            string clientAssertion = await BuildClientAssertion(requestedClientId);
 
             FormUrlEncodedContent payload = new FormUrlEncodedContent(new Dictionary<string, string>
             {
@@ -71,7 +71,7 @@ namespace MyHealthDocsClientLib
                 { "requested_subject", requestedSubject },
                 { "client_id", requestedClientId },
                 { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                { "client_assertion", clientAssertation },
+                { "client_assertion", clientAssertion },
             });
 
             HttpResponseMessage response = await httpClient.PostAsync(TokenEndpointUri, payload);
@@ -88,14 +88,14 @@ namespace MyHealthDocsClientLib
 
         public override async Task<Token> GetAccessToken(HttpClient httpClient, string clientId)
         {
-            string clientAssertation = await BuildClientAssertation(clientId);
+            string clientAssertion = await BuildClientAssertion(clientId);
 
             FormUrlEncodedContent payload = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 { "client_id", clientId },
                 { "grant_type", "client_credentials" },
                 { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                { "client_assertion", clientAssertation },
+                { "client_assertion", clientAssertion },
             });
 
             HttpResponseMessage response = await httpClient.PostAsync(TokenEndpointUri, payload);

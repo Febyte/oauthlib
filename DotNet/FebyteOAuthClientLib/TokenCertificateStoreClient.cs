@@ -20,7 +20,7 @@ namespace MyHealthDocsClientLib
             _thumbprint = thumbprint;
         }
 
-        public override Task<string> BuildClientAssertation(string clientId)
+        public override Task<string> BuildClientAssertion(string clientId)
         {
             string signaturePayloadText = BuildHeaderAndPayload(clientId, TokenEndpointUri);
             byte[] signaturePayloadBytes = Encoding.UTF8.GetBytes(signaturePayloadText);
@@ -44,14 +44,14 @@ namespace MyHealthDocsClientLib
 
         public override async Task<Token> GetAccessToken(HttpClient httpClient, string clientId)
         {
-            string clientAssertation = await BuildClientAssertation(clientId);
+            string clientAssertion = await BuildClientAssertion(clientId);
 
             FormUrlEncodedContent payload = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 { "client_id", clientId },
                 { "grant_type", "client_credentials" },
                 { "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer" },
-                { "client_assertion", clientAssertation },
+                { "client_assertion", clientAssertion },
             });
 
             HttpResponseMessage response = await httpClient.PostAsync(TokenEndpointUri, payload);

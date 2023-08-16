@@ -14,7 +14,7 @@ function ConvertTo-Base64Url
 	$Base64String.Replace('+', '-').Replace('/', '_')
 }
 
-function global:New-ClientAssertation
+function global:New-ClientAssertion
 {
 	[CmdletBinding()]
 	Param($ClientId, $TokenEndpointUri, $Pem)

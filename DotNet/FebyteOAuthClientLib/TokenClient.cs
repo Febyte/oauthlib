@@ -45,7 +45,7 @@ namespace MyHealthDocsClientLib
             return signaturePayloadText;
         }
 
-        public abstract Task<string> BuildClientAssertation(string clientId);
+        public abstract Task<string> BuildClientAssertion(string clientId);
 
         public abstract Task<Token> GetAccessToken(HttpClient httpClient, string clientId);
 
