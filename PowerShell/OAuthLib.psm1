@@ -14,7 +14,7 @@ function ConvertTo-Base64Url
 	$Base64String.Replace('+', '-').Replace('/', '_')
 }
 
-function global:New-ClientAssertion
+function New-ClientAssertion
 {
 	[CmdletBinding()]
 	Param($ClientId, $TokenEndpointUri, $Pem)
@@ -58,3 +58,5 @@ function global:New-ClientAssertion
 		"${SignaturePayloadText}.${SignatureEncoded}"
 	}
 }
+
+Export-ModuleMember -Function 'New-ClientAssertion'
