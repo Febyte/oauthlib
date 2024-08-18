@@ -14,14 +14,16 @@ function ConvertTo-Base64Url
 	$Base64String.Replace('+', '-').Replace('/', '_')
 }
 
+enum JwtAlgorithm { ES256; ES384; ES512; RS256; RS384; RS512 }
+
 function New-ClientAssertion
 {
 	[CmdletBinding()]
-	Param($ClientId, $TokenEndpointUri, $Pem)
+	Param($ClientId, $TokenEndpointUri, $Pem, [JwtAlgorithm] $Algorithm = 'RS256')
 	
 	Begin
 	{
-		$HeaderText = @{alg = 'RS256'; typ = 'JWT'} | ConvertTo-Json -Compress
+		$HeaderText = @{alg = $Algorithm.ToString(); typ = 'JWT'} | ConvertTo-Json -Compress
 		$HeaderEncoded = ConvertTo-Base64Url -InputObject $HeaderText -AsPlainText
 	}
 	
@@ -48,10 +50,26 @@ function New-ClientAssertion
 		$SignaturePayloadText = "${HeaderEncoded}.${PayloadEncoded}"
 		$SignaturePayloadBytes = [System.Text.Encoding]::UTF8.GetBytes($SignaturePayloadText)
 		
-		$Rsa = [System.Security.Cryptography.RSA]::Create()
-		$Rsa.ImportFromPem($Pem)
-		$SignatureBytes = $Rsa.SignData($SignaturePayloadBytes, [System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.RSASignaturePadding]::Pkcs1)
-		$Rsa.Dispose()
+		$HashAlgorithm = [System.Security.Cryptography.HashAlgorithmName]::new('SHA' + $Algorithm.ToString().Substring(2))
+
+		switch ($Algorithm.ToString().Substring(0, 2))
+		{
+			'RS'
+			{
+				$AsymmetricAlgorithm = [System.Security.Cryptography.RSA]::Create()
+				$SignatureFormat = [System.Security.Cryptography.RSASignaturePadding]::Pkcs1
+			}
+
+			'ES'
+			{
+				$AsymmetricAlgorithm = [System.Security.Cryptography.ECDsa]::Create()
+				$SignatureFormat = [System.Security.Cryptography.DSASignatureFormat]::IeeeP1363FixedFieldConcatenation
+			}
+		}
+
+		$AsymmetricAlgorithm.ImportFromPem($Pem)
+		$SignatureBytes = $AsymmetricAlgorithm.SignData($SignaturePayloadBytes, $HashAlgorithm, $SignatureFormat)
+		$AsymmetricAlgorithm.Dispose()
 		
 		$SignatureEncoded = ConvertTo-Base64Url -InputObject $SignatureBytes
 		
