@@ -35,7 +35,8 @@ function New-ClientAssertion
 		$Epoch = [DateTime]::new(1970, 01, 01)
 
 		$NotBefore = ($Now.AddMinutes(-5) - $Epoch).TotalSeconds -as [long]
-		$ExpiresAt = ($Now.AddMinutes(5) - $Epoch).TotalSeconds -as [long]
+		$ExpiresAt = ($Now.AddSeconds(30) - $Epoch).TotalSeconds -as [long]
+		$IssuedAt = ($Now - $Epoch).TotalSeconds -as [long]
 
 		$Payload = @{
 			sub = $ClientId
@@ -44,6 +45,7 @@ function New-ClientAssertion
 			exp = $ExpiresAt
 			iss = $ClientId
 			aud = $TokenEndpointUri
+			iat = $IssuedAt
 		}
 
 		$PayloadText = $Payload | ConvertTo-Json -Compress

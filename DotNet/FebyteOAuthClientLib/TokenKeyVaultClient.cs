@@ -38,7 +38,6 @@ namespace MyHealthDocsClientLib
                 ExcludeEnvironmentCredential = true,
                 ExcludeInteractiveBrowserCredential = true,
                 ExcludeSharedTokenCacheCredential = true,
-                ExcludeVisualStudioCodeCredential = true,
                 ExcludeVisualStudioCredential = true,
                 ExcludeWorkloadIdentityCredential = true,
 

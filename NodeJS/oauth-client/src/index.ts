@@ -27,7 +27,7 @@ export function buildHeaderAndPayload(clientId: string, tokenEndpointUri: string
 
     const unixNow = Math.floor(new Date().getTime() / 1000)
     const notBefore = unixNow - 5 * 60
-    const expiresAt = unixNow + 5 * 60
+    const expiresAt = unixNow + 30
 
     const payload = {
         sub: clientId,
@@ -35,7 +35,8 @@ export function buildHeaderAndPayload(clientId: string, tokenEndpointUri: string
         nbf: notBefore,
         exp: expiresAt,
         iss: clientId,
-        aud: tokenEndpointUri
+        aud: tokenEndpointUri,
+        iat: unixNow
     }
 
     const payloadJson = JSON.stringify(payload)

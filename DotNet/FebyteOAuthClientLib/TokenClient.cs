@@ -26,7 +26,8 @@ namespace MyHealthDocsClientLib
             DateTime epoch = new DateTime(1970, 01, 01);
 
             int notBefore = Convert.ToInt32((now.AddMinutes(-5) - epoch).TotalSeconds);
-            int expiresAt = Convert.ToInt32((now.AddMinutes(5) - epoch).TotalSeconds);
+            int expiresAt = Convert.ToInt32((now.AddSeconds(30) - epoch).TotalSeconds);
+            int issuedAt = Convert.ToInt32((now - epoch).TotalSeconds);
 
             IDictionary<string, object> payload = new Dictionary<string, object>()
             {
@@ -36,6 +37,7 @@ namespace MyHealthDocsClientLib
                 { "exp", expiresAt },
                 { "iss", clientId },
                 { "aud", tokenEndpointUri },
+                { "iat", issuedAt },
             };
 
             string payloadText = JsonSerializer.Serialize(payload);
